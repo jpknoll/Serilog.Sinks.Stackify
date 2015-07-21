@@ -14,3 +14,5 @@ var log = new LoggerConfiguration()
 ```
 
 The sink captures all levels, but respect the minimum level configured on LoggerConfiguration. Serilog properties are converted to stackify's jsondata property.
+
+Refer to Stackify's documentation [Here](https://github.com/stackify/stackify-api-dotnet/) for configuration.
