@@ -58,9 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Content Include="AppSettings.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -71,10 +68,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
+       Other similar extension points exist, see Microsoft.Common.targets. -->
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
+    <CreateItem Include="AppSettings.config">
+      <Output ItemName="AppSettings" TaskParameter="Include" />
+    </CreateItem>
+    <Copy SourceFiles="@(AppSettings)" DestinationFolder="$(OutputPath)" Condition="Exists('%(RootDir)%(Directory)%(Filename)%(Extension)')" />
   </Target>
-  -->
 </Project>
