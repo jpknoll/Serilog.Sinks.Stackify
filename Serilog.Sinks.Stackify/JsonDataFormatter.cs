@@ -20,9 +20,9 @@ using Serilog.Formatting.Json;
 
 namespace Serilog
 {
-    public class JsonPropertyFormatter : JsonFormatter
+    public class JsonDataFormatter : JsonFormatter
     {
-        public new void Format(LogEvent logEvent, TextWriter output)
+        public void FormatData(LogEvent logEvent, TextWriter output)
         {
             if (output == null)
                 throw new ArgumentNullException("output");
@@ -32,10 +32,7 @@ namespace Serilog
             var delim = "";
 
             if (logEvent.Properties.Count != 0)
-            {
-                delim = ",";
-                WriteProperties(logEvent.Properties, output);
-            }
+                WriteProperties(logEvent.Properties, ref delim, output);
 
             if (logEvent.Exception != null)
                 WriteException(logEvent.Exception, ref delim, output);
@@ -43,11 +40,13 @@ namespace Serilog
             output.Write("}");
         }
 
-        protected override void WriteProperties(IReadOnlyDictionary<string, LogEventPropertyValue> properties, TextWriter output)
+        protected void WriteProperties(IReadOnlyDictionary<string, LogEventPropertyValue> properties, ref string delim, TextWriter output)
         {
             output.Write("\"{0}\":{{", "Properties");
             WritePropertiesValues(properties, output);
             output.Write("}");
+
+            delim = ",";
         }
     }
 }

@@ -48,7 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsonPropertyFormatter.cs" />
+    <Compile Include="JsonDataFormatter.cs" />
     <Compile Include="LoggerConfigurationStackifyExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sinks\Stackify\StackifySink.cs" />

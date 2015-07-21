@@ -24,7 +24,7 @@ namespace Serilog.Sinks.Stackify
     public class StackifySink : ILogEventSink, IDisposable
     {
         private readonly IFormatProvider _formatProvider;
-        private readonly JsonPropertyFormatter _propertyFormatter;
+        private readonly JsonDataFormatter _dataFormatter;
 
         /// <summary>
         /// Construct a sink that saves logs to the specified storage account.
@@ -33,7 +33,7 @@ namespace Serilog.Sinks.Stackify
         {
             _formatProvider = formatProvider;
 
-            _propertyFormatter = new JsonPropertyFormatter();
+            _dataFormatter = new JsonDataFormatter();
 
             AppDomain.CurrentDomain.DomainUnload += OnAppDomainUnloading;
             AppDomain.CurrentDomain.ProcessExit += OnAppDomainUnloading;
@@ -69,7 +69,7 @@ namespace Serilog.Sinks.Stackify
         private string PropertiesToData(LogEvent logEvent)
         {
             var payload = new StringWriter();
-            _propertyFormatter.Format(logEvent, payload);
+            _dataFormatter.FormatData(logEvent, payload);
             
             return payload.ToString();
         }
