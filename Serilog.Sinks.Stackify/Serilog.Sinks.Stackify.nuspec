@@ -15,7 +15,7 @@
     <tags>serilog logging stackify error</tags>
     <dependencies>
       <dependency id="Serilog" version="1.5.7" />
-      <dependency id="Stackify" version="1.12.0.0" />
+      <dependency id="StackifyLib" version="1.12.0.0" />
     </dependencies>
   </metadata>
 </package>
