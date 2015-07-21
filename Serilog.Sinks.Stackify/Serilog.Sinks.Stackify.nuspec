@@ -13,8 +13,8 @@
     <copyright>Copyright 2015</copyright>
     <tags>serilog logging stackify error</tags>
     <dependencies>
-      <dependancy id="Serilog" version="[1.5.7,2)" />
-      <dependancy id="Stackify" version="[1.12.0.0,2)" />
+      <dependency id="Serilog" version="1.5.7" />
+      <dependency id="Stackify" version="1.12.0.0" />
     </dependencies>
   </metadata>
 </package>
