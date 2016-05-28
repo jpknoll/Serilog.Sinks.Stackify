@@ -55,15 +55,15 @@ namespace Serilog.Sinks.Stackify
         /// <param name="logEvent">The log event to write.</param>
         public void Emit(LogEvent logEvent)
         {
-            if (!Logger.CanSend())
-                return;
-
-            Logger.QueueLogObject(new LogMsg()
+            if (Logger.PrefixEnabled() || Logger.CanSend())
             {
-                Level = LevelToSeverity(logEvent),
-                Msg = logEvent.RenderMessage(_formatProvider),
-                data = PropertiesToData(logEvent)
-            }, logEvent.Exception);
+                Logger.QueueLogObject(new LogMsg()
+                {
+                    Level = LevelToSeverity(logEvent),
+                    Msg = logEvent.RenderMessage(_formatProvider),
+                    data = PropertiesToData(logEvent)
+                }, logEvent.Exception);
+            }
         }
 
         private string PropertiesToData(LogEvent logEvent)
@@ -71,7 +71,12 @@ namespace Serilog.Sinks.Stackify
             var payload = new StringWriter();
             _dataFormatter.FormatData(logEvent, payload);
             
-            return payload.ToString();
+            var data = payload.ToString();
+
+            if (data == "{}")
+                return null;
+
+            return data;
         }
 
         static string LevelToSeverity(LogEvent logEvent)
