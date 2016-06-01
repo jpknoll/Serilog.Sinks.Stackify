@@ -1,7 +1,5 @@
 # Serilog.Sinks.Stackify
 
-[![Build status](https://ci.appveyor.com/api/projects/status/k1p4fbf5wt9m7yr8?svg=true)](https://ci.appveyor.com/project/jpknoll/serilog-sinks-stackify)
-
 A Serilog sink that writes events to stackify. [Stackify](http://www.stackify.com) is a cloud hosted solution to capture log messages. Register for an account at their website and use the provided GUID in the configuration for Serilog.
 
 **Package** - [Serilog.Sinks.Stackify](http://nuget.org/packages/serilog.sinks.Stackify)
