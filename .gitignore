@@ -230,3 +230,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 Example/AppSettings.config
+/.vs/restore.dg
+/Serilog.Sinks.Stackify/project.lock.json

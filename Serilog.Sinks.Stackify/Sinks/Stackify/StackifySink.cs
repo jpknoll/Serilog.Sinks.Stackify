@@ -35,17 +35,6 @@ namespace Serilog.Sinks.Stackify
 
             _dataFormatter = new JsonDataFormatter();
 
-            AppDomain.CurrentDomain.DomainUnload += OnAppDomainUnloading;
-            AppDomain.CurrentDomain.ProcessExit += OnAppDomainUnloading;
-            AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnloading;
-        }
-
-        private void OnAppDomainUnloading(object sender, EventArgs args)
-        {
-            var exceptionEventArgs = args as UnhandledExceptionEventArgs;
-            if (exceptionEventArgs != null && !exceptionEventArgs.IsTerminating)
-                return;
-            CloseAndFlush();
         }
 
 
@@ -55,9 +44,9 @@ namespace Serilog.Sinks.Stackify
         /// <param name="logEvent">The log event to write.</param>
         public void Emit(LogEvent logEvent)
         {
-            if (Logger.PrefixEnabled() || Logger.CanSend())
+            if (StackifyLib.Logger.PrefixEnabled() || StackifyLib.Logger.CanSend())
             {
-                Logger.QueueLogObject(new LogMsg()
+                StackifyLib.Logger.QueueLogObject(new LogMsg()
                 {
                     Level = LevelToSeverity(logEvent),
                     Msg = logEvent.RenderMessage(_formatProvider),
@@ -98,15 +87,6 @@ namespace Serilog.Sinks.Stackify
             }
         }
 
-        private void CloseAndFlush()
-        {
-            AppDomain.CurrentDomain.DomainUnload -= OnAppDomainUnloading;
-            AppDomain.CurrentDomain.ProcessExit -= OnAppDomainUnloading;
-            AppDomain.CurrentDomain.UnhandledException -= OnAppDomainUnloading;
-            
-            Logger.Shutdown();
-        }
-
         private bool _disposed;
 
         public void Dispose()
@@ -114,7 +94,7 @@ namespace Serilog.Sinks.Stackify
             if (_disposed)
                 return;
 
-            Logger.Shutdown();
+            StackifyLib.Logger.Shutdown();
             _disposed = true;
         }
     }

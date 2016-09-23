@@ -57,14 +57,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Serilog.Sinks.Stackify\Serilog.Sinks.Stackify.csproj">
-      <Project>{b1eb8ae7-cc8d-4e0c-958e-c0a77dbe002b}</Project>
-      <Name>Serilog.Sinks.Stackify</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
