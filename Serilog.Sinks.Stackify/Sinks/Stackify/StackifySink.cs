@@ -17,14 +17,18 @@ using System.IO;
 using Serilog.Core;
 using Serilog.Events;
 using StackifyLib;
+using StackifyLib.Internal.Logs;
 using StackifyLib.Models;
+using StackifyLib.Utils;
 
 namespace Serilog.Sinks.Stackify
 {
     public class StackifySink : ILogEventSink, IDisposable
     {
+        private readonly ErrorGovernor _Governor = new ErrorGovernor();
         private readonly IFormatProvider _formatProvider;
         private readonly JsonDataFormatter _dataFormatter;
+        private LogClient _logClient = null;
 
         /// <summary>
         /// Construct a sink that saves logs to the specified storage account.
@@ -34,7 +38,7 @@ namespace Serilog.Sinks.Stackify
             _formatProvider = formatProvider;
 
             _dataFormatter = new JsonDataFormatter();
-
+            _logClient = new LogClient("StackifyLib.net-serilog", null, null);
         }
 
 
@@ -46,12 +50,41 @@ namespace Serilog.Sinks.Stackify
         {
             if (StackifyLib.Logger.PrefixEnabled() || StackifyLib.Logger.CanSend())
             {
-                StackifyLib.Logger.QueueLogObject(new LogMsg()
+                var msg = new LogMsg()
                 {
                     Level = LevelToSeverity(logEvent),
                     Msg = logEvent.RenderMessage(_formatProvider),
                     data = PropertiesToData(logEvent)
-                }, logEvent.Exception);
+                };
+
+                StackifyError error = null;
+
+                Exception ex = logEvent.Exception;
+
+                if (ex == null)
+                {
+                    if (logEvent.Level == LogEventLevel.Error || logEvent.Level == LogEventLevel.Fatal)
+                    {
+                        StringException stringException = new StringException(msg.Msg);
+                        stringException.TraceFrames = StackifyLib.Logger.GetCurrentStackTrace(null);
+                        error = StackifyError.New(stringException);
+                    }
+                }
+                else if(ex is StackifyError)
+                {
+                    error = (StackifyError)ex;
+                }
+                else
+                {
+                    error = StackifyError.New(ex);
+                }
+
+                if (error != null && !StackifyError.IgnoreError(error) && _Governor.ErrorShouldBeSent(error))
+                {
+                    msg.Ex = error;
+                }
+
+                _logClient.QueueMessage(msg);
             }
         }
 
@@ -94,7 +127,16 @@ namespace Serilog.Sinks.Stackify
             if (_disposed)
                 return;
 
-            StackifyLib.Logger.Shutdown();
+            try
+            {
+                StackifyLib.Utils.StackifyAPILogger.Log("Serilog target closing");
+                _logClient.Close();
+                StackifyLib.Internal.Metrics.MetricClient.StopMetricsQueue("Serilog CloseTarget");
+            }
+            catch (Exception ex)
+            {
+                StackifyLib.Utils.StackifyAPILogger.Log("Serilog target closing error: " + ex.ToString());
+            }
             _disposed = true;
         }
     }
