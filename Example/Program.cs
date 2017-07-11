@@ -36,7 +36,8 @@ namespace Example
         static void ConfigureLogging()
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Stackify()
+                .WriteTo
+                .Stackify()
                 .CreateLogger();
         }
     }
